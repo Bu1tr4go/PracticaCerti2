@@ -1,0 +1,5 @@
+Nombre,Apellido,Ci,TipoSanguineo
+Daniel,Torrico,13034245,O+
+Nicolas,Moscoso,12345,B-
+Cristian,Perez,54321,A+
+Fernanda,Lopez,78901,B+

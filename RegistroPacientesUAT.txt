@@ -1,0 +1,6 @@
+Nombre,Apellido,Ci,TipoSanguineo
+Daniel,Torrico,13034245,O+
+Fabricio,Romano,765431,A+
+Baltimore,Buticofer,890154,B-
+Giuliana,Arnez,12345,O+
+Kevin,Cazon,777777,B+
