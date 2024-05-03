@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.Models;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
