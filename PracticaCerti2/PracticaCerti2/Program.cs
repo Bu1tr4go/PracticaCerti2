@@ -1,5 +1,6 @@
 using BusinessLogic.Managers;
 using Microsoft.Extensions.Configuration;
+using PracticaCerti2.Middlewares;
 using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseExceptionHandlerMiddleware();
 
 if (app.Environment.EnvironmentName == "QA")
 {
@@ -40,7 +43,9 @@ else
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "QA" || app.Environment.EnvironmentName == "UAT")
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+        c.DocumentTitle = app.Configuration.GetSection("ApplicationSettings").GetSection("ApplicationName").Value
+    );
 }
 
 app.UseHttpsRedirection();

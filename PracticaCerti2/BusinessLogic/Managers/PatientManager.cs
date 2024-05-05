@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Models;
+﻿using BusinessLogic.Managers.Exceptions;
+using BusinessLogic.Models;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
@@ -26,9 +27,18 @@ namespace BusinessLogic.Managers
         }
         public void Add(string nombre, string apellido, int ci)
         {
-            string tipoSanguineo = tiposSanguineos[rand.Next(6)];
-            patients[ci] = new PatientEntity(nombre, apellido, ci, tipoSanguineo);
-            WriteBD();
+            if (patients.ContainsKey(ci))
+            {
+                PatientException ex = new PatientException("CI ya registrado");
+                Log.Error(ex.GetMensajeforLogs("Add patient"));
+                throw ex;
+            }
+            else
+            {
+                string tipoSanguineo = tiposSanguineos[rand.Next(6)];
+                patients[ci] = new PatientEntity(nombre, apellido, ci, tipoSanguineo);
+                WriteBD();
+            }
         }
         public void Add(PatientEntity patient)
         {
@@ -36,26 +46,64 @@ namespace BusinessLogic.Managers
         }
         public void Remove(int ci)
         {
-            patients.Remove(ci);
-            WriteBD();
+            if (patients.ContainsKey(ci))
+            {
+                patients.Remove(ci);
+                WriteBD();
+            }
+            else
+            {
+                Log.Error("Patient not found");
+            }
         }
         public PatientEntity Get(int ci)
         {
-            return patients[ci];
+            try
+            {
+                return patients[ci];
+            }
+            catch (Exception e)
+            {
+                PatientException ex = new PatientException(e.Message);
+                Log.Error(ex.GetMensajeforLogs("Get by CI"));
+                Log.Error("Patient not found");
+                throw ex;
+            }
         }
+
         public Dictionary<int, PatientEntity>.ValueCollection Get()
         {
             return patients.Values;
         }
         public void UpdateNombre(int ci, string nombre) 
         {
-            patients[ci].Nombre = nombre;
-            WriteBD();
+            try
+            {
+                patients[ci].Nombre = nombre;
+                WriteBD();
+            }
+            catch(Exception e)
+            {
+                PatientException ex = new PatientException(e.Message);
+                Log.Error(ex.GetMensajeforLogs("Update Name by CI"));
+                Log.Error("Patient not found");
+                throw ex;
+            }
         }
         public void UpdateApellido(int ci, string apellido)
         {
-            patients[ci].Apellido = apellido;
-            WriteBD();
+            try
+            {
+                patients[ci].Apellido = apellido;
+                WriteBD();
+            }
+            catch( Exception e )
+            {
+                PatientException ex = new PatientException(e.Message);
+                Log.Error(ex.GetMensajeforLogs("Update LastName by CI"));
+                Log.Error("Patient not found");
+                throw ex;
+            }
         }
         private void ReadBD()
         {

@@ -26,7 +26,8 @@ namespace PracticaCerti2.Controllers
         [HttpGet("{id}")]
         public PatientEntity Get(int id)
         {
-            return manager.Get(id);
+            PatientEntity patient = manager.Get(id);
+            return patient != null ? patient : null;
         }
 
         // POST api/<Patients>
