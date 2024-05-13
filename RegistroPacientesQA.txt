@@ -1,5 +1,7 @@
-Nombre,Apellido,Ci,TipoSanguineo
-Daniel,Torrico,13034245,O+
-Nicolas,Moscoso,12345,B-
-Cristian,Perez,54321,A+
-Fernanda,Lopez,78901,B+
+Nombre,Apellido,Ci,TipoSanguineo,Codigo
+Daniel,Torrico,13034245,O+,DT13034245
+Nicolas,Moscoso,12345,B-,NM12345
+Cristian,Perez,54321,A+,CP54321
+Fernanda,Lopez,78901,B+,FL78901
+Pedro,Picapiedra,100100,B-,PP100100
+Juan,Alvarez,876790,A-,JA876790

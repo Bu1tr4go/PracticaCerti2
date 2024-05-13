@@ -12,12 +12,14 @@ namespace BusinessLogic.Models
         public string Apellido { get; set; }
         public int CI { get; set; }
         public string TipoSanguineo {  get; set; }
-        public PatientEntity(string nombre, string apellido, int ci, string tipoSanguineo) 
+        public string Codigo { get; set; }
+        public PatientEntity(string nombre, string apellido, int ci, string tipoSanguineo, string codigo) 
         {
             Nombre = nombre;
             Apellido = apellido;
             CI = ci;
             TipoSanguineo = tipoSanguineo;
+            Codigo = codigo;
         }
     }
 }

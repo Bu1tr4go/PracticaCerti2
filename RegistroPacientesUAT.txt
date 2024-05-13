@@ -1,6 +1,6 @@
-Nombre,Apellido,Ci,TipoSanguineo
-Daniel,Torrico,13034245,O+
-Fabricio,Romano,765431,A+
-Baltimore,Buticofer,890154,B-
-Giuliana,Defil,12345,O+
-Kevin,Cazon,777777,B+
+Nombre,Apellido,Ci,TipoSanguineo,Codigo
+Daniel,Torrico,13034245,O+,DT13034245
+Fabricio,Romano,765431,A+,FR765431
+Baltimore,Buticofer,890154,B-,BB890154
+Giuliana,Defil,12345,O+,GD12345
+Kevin,Cazon,777777,B+,KC777777

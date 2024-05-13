@@ -25,7 +25,7 @@ namespace BusinessLogic.Managers
             patients = new Dictionary<int, PatientEntity>();
             ReadBD();
         }
-        public void Add(string nombre, string apellido, int ci)
+        public async void Add(string nombre, string apellido, int ci)
         {
             if (patients.ContainsKey(ci))
             {
@@ -36,7 +36,8 @@ namespace BusinessLogic.Managers
             else
             {
                 string tipoSanguineo = tiposSanguineos[rand.Next(6)];
-                patients[ci] = new PatientEntity(nombre, apellido, ci, tipoSanguineo);
+                string codigo = await ObtenerCodigo(nombre, apellido, ci);
+                patients[ci] = new PatientEntity(nombre, apellido, ci, tipoSanguineo, codigo);
                 WriteBD();
             }
         }
@@ -105,11 +106,13 @@ namespace BusinessLogic.Managers
                 throw ex;
             }
         }
-        private void ReadBD()
+        private async void ReadBD()
         {
             StreamReader reader = new StreamReader(ubicacionRegistro);
 
             string line = reader.ReadLine();
+
+            bool guardar = false;
 
             while (!reader.EndOfStream)
             {
@@ -119,22 +122,68 @@ namespace BusinessLogic.Managers
                 string apellido = param[1];
                 int ci = int.Parse(param[2]);
                 string tipoSanguineo = param[3];
-                patients.Add(ci, new PatientEntity(nombre, apellido, ci, tipoSanguineo));
+                string codigo;
+                if (param.Length > 4)
+                {
+                    codigo = param[4];
+                }
+                else
+                {
+                    codigo = await ObtenerCodigo(nombre, apellido, ci);
+                    guardar = true;
+                }
+                patients.Add(ci, new PatientEntity(nombre, apellido, ci, tipoSanguineo, codigo));
             }
             reader.Close();
+
+            if (guardar)
+            {
+                WriteBD();
+            }
         }
         private void WriteBD()
         {
             StreamWriter writer = new StreamWriter(ubicacionRegistro);
 
-            writer.WriteLine("Nombre,Apellido,Ci,TipoSanguineo");
+            writer.WriteLine("Nombre,Apellido,Ci,TipoSanguineo,Codigo");
 
             foreach (PatientEntity patient in patients.Values)
             {
-                string line = $"{patient.Nombre},{patient.Apellido},{patient.CI},{patient.TipoSanguineo}";
+                string line = $"{patient.Nombre},{patient.Apellido},{patient.CI},{patient.TipoSanguineo},{patient.Codigo}";
                 writer.WriteLine(line);
             }
             writer.Close();
         }
+        public async Task<string> ObtenerCodigo(string nombre, string apellido, int ci)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("http://localhost:5080/");
+                    string url = $"api/Paciente/{nombre}/{apellido}/{ci}";
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    Log.Information("Obteniendo Codigo");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("PATIENT CODE recibido: " + responseBody);
+                        return responseBody;
+                    }
+                    else
+                    {
+                        Log.Error("La solicitud HTTP no fue exitosa. Código de estado: " + response.StatusCode);
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error al realizar la solicitud HTTP: " + ex.Message);
+                return null;
+            }
+        }
+
     }
 }
