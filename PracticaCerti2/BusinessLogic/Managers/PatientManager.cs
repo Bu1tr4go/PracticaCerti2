@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,7 +142,7 @@ namespace BusinessLogic.Managers
                 WriteBD();
             }
         }
-        private void WriteBD()
+        private async void WriteBD()
         {
             StreamWriter writer = new StreamWriter(ubicacionRegistro);
 
@@ -160,8 +161,8 @@ namespace BusinessLogic.Managers
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("http://localhost:5080/");
-                    string url = $"api/Paciente/{nombre}/{apellido}/{ci}";
+                    client.BaseAddress = new Uri($"{_conf.GetSection("Paths").GetSection("api3").Value}");
+                    string url = $"{_conf.GetSection("Paths").GetSection("ruta").Value}{nombre}/{apellido}/{ci}";
                     HttpResponseMessage response = await client.GetAsync(url);
                     Log.Information("Obteniendo Codigo");
 
@@ -174,14 +175,16 @@ namespace BusinessLogic.Managers
                     else
                     {
                         Log.Error("La solicitud HTTP no fue exitosa. Código de estado: " + response.StatusCode);
-                        return null;
+                        PatientException ex = new PatientException("Error en la solicitud http");
+                        throw ex;
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Log.Error("Error al realizar la solicitud HTTP: " + ex.Message);
-                return null;
+                PatientException ex = new PatientException(e.Message);
+                Log.Error(ex.GetMensajeforLogs("Error al realizar la solicitud HTTP: "));
+                throw ex;
             }
         }
 
